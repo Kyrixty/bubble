@@ -14,6 +14,10 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+const fs = require('fs');
+const cryptoJS = require('crypto-js');
+
+const ALGORITHM = 'aes256';
 
 class AppUpdater {
   constructor() {
@@ -23,12 +27,78 @@ class AppUpdater {
   }
 }
 
+const encrypt = (data: string, masterKey: string) => {
+  const encrypted = cryptoJS.AES.encrypt(data, masterKey).toString();
+  return encrypted;
+};
+
+const decrypt = (data: string, masterKey: string) => {
+  try {
+    const decrypted = cryptoJS.AES.decrypt(data, masterKey).toString(
+      cryptoJS.enc.Utf8
+    );
+    return decrypted;
+  } catch (e) {
+    return { error: e };
+  }
+};
+
+const createBubbleFile = () => {
+  const pathToFile = path.join(app.getPath('userData'), '/bubble/', 'bubble.dat');
+  const pathDirname = path.dirname(pathToFile);
+  !fs.existsSync(pathDirname) && fs.mkdirSync(pathDirname);
+  !fs.existsSync(pathToFile) ? fs.writeFileSync(pathToFile, '') : null;
+  return pathToFile;
+};
+
+const readFile = (pathToFile: string) => {
+  return fs.readFileSync(pathToFile, 'utf8');
+};
+
 let mainWindow: BrowserWindow | null = null;
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
+  console.log(app.getPath("userData"))
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.handle('create-password', async (event, arg) => {
+  const pathToFile = createBubbleFile();
+  let data = readFile(pathToFile);
+  const msgData = JSON.parse(arg);
+  if (!data) {
+    data = [];
+  } else {
+    data = decrypt(data, msgData.masterKey);
+    if (data.error || !data) {
+        return { error: "Bad master key" };
+    }
+    data = JSON.parse(data);
+  }
+  data.push({ website: msgData.website, password: msgData.password });
+  fs.writeFileSync(
+    pathToFile,
+    encrypt(JSON.stringify(data), msgData.masterKey)
+  );
+  return 'Password created';
+});
+
+ipcMain.handle('get-passwords', async (event, arg) => {
+  const pathToFile = createBubbleFile();
+  let data = readFile(pathToFile);
+  const msgData = JSON.parse(arg);
+  if (!data) {
+    data = [];
+  } else {
+    data = decrypt(data, msgData.masterKey);
+    if (data.error || !data) {
+        return JSON.stringify({ error: "Bad master key" });
+    }
+    data = JSON.parse(data);
+  }
+  return JSON.stringify(data);
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -71,6 +141,8 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
+    minWidth: 900,
+    minHeight: 600,
     width: 1024,
     height: 728,
     icon: getAssetPath('icon.png'),
@@ -78,6 +150,8 @@ const createWindow = async () => {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
+      devTools: true,
+      nodeIntegration: true,
     },
   });
 
@@ -93,13 +167,14 @@ const createWindow = async () => {
       mainWindow.show();
     }
   });
+  mainWindow.removeMenu();
 
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
 
   const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  //menuBuilder.buildMenu();
 
   // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {

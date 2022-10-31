@@ -1,5 +1,6 @@
 {
-  "description": "A foundation for scalable desktop apps",
+  "description": "Bubble - a free password manager",
+  "version": "0.1.0",
   "keywords": [
     "electron",
     "boilerplate",
@@ -39,7 +40,7 @@
     "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
     "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
-    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never",
+    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish always",
     "prepare": "husky install",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
@@ -109,9 +110,28 @@
     }
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@mantine/carousel": "^5.6.3",
+    "@mantine/core": "^5.6.3",
+    "@mantine/dates": "^5.6.3",
+    "@mantine/dropzone": "^5.6.3",
+    "@mantine/form": "^5.6.3",
+    "@mantine/hooks": "^5.6.3",
+    "@mantine/modals": "^5.6.3",
+    "@mantine/notifications": "^5.6.3",
+    "@mantine/nprogress": "^5.6.3",
+    "@mantine/prism": "^5.6.3",
+    "@mantine/rte": "^5.6.3",
+    "@mantine/spotlight": "^5.6.3",
+    "@tabler/icons": "^1.108.0",
+    "bcryptjs": "^2.4.3",
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.1.1",
+    "dayjs": "^1.11.6",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-updater": "^5.2.3",
+    "embla-carousel-react": "^7.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0"
@@ -185,14 +205,18 @@
     "webpack-merge": "^5.8.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "Bubble",
+    "appId": "org.erb.Bubble",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
       "dist",
       "node_modules",
-      "package.json"
+      "package.json",
+      "bubble.dat"
+    ],
+    "extraFiles": [
+        "bubble.dat"
     ],
     "afterSign": ".erb/scripts/notarize.js",
     "mac": {
@@ -226,6 +250,9 @@
     "win": {
       "target": [
         "nsis"
+      ],
+      "publish": [
+        "github"
       ]
     },
     "linux": {
@@ -244,8 +271,8 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "bubble",
+      "repo": "bubble"
     }
   },
   "collective": {

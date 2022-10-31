@@ -1,11 +1,19 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels = 'ipc-example';
+('create-password');
+('get-passwords');
 
 contextBridge.exposeInMainWorld('electron', {
+  createPassword: (args: unknown[]) => {
+    return ipcRenderer.invoke('create-password', args);
+  },
+  getPasswords: (args: unknown[]) => {
+    return ipcRenderer.invoke('get-passwords', args);
+  },
   ipcRenderer: {
     sendMessage(channel: Channels, args: unknown[]) {
-      ipcRenderer.send(channel, args);
+      return ipcRenderer.send(channel, args);
     },
     on(channel: Channels, func: (...args: unknown[]) => void) {
       const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
