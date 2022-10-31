@@ -1,4 +1,5 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import packageJson from "../../package.json";
 import {
   ActionIcon,
   Box,
@@ -299,7 +300,7 @@ function Main() {
       </Center>
       <br />
       <Center>
-        <Text size="sm">V0.1.6, expect bugs</Text>
+        <Text size="sm">V{packageJson.version}, expect bugs</Text>
       </Center>
       <Box sx={{ padding: '20px' }}>
         {passwords.length ? (

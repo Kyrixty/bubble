@@ -1,7 +1,11 @@
 {
   "name": "bubble-pwd-mngr",
   "description": "Bubble - a free password manager",
+<<<<<<< HEAD
   "version": "0.1.6",
+=======
+  "version": "0.1.7",
+>>>>>>> b42115b9c62f068b680c37847846b964487724a4
   "keywords": [
     "electron",
     "boilerplate",
