@@ -116,7 +116,7 @@ ipcMain.handle('remove-password', async (event, arg) => {
   data = JSON.parse(data);
   console.log(data);
   data = data.filter((item: any) => {
-    return item.website !== website && item.password !== password && item.nickname !== nickname;
+    return item.website !== website || item.password !== password || item.nickname !== nickname;
   })
   fs.writeFileSync(
     pathToFile,
