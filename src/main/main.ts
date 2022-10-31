@@ -185,6 +185,15 @@ const createWindow = async () => {
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   autoUpdater.checkForUpdatesAndNotify();
+  /*
+  const hasUpdates = await autoUpdater.checkForUpdates();
+  if (hasUpdates) {
+    alert('New version available, downloading...', hasUpdates);
+    autoUpdater.downloadUpdate();
+  } else {
+    alert('No updates available');
+  }
+  */
   new AppUpdater();
 };
 
