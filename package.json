@@ -1,6 +1,7 @@
 {
+  "name": "bubble-pwd-mngr",
   "description": "Bubble - a free password manager",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "keywords": [
     "electron",
     "boilerplate",
@@ -12,25 +13,25 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/Kyrixty/bubble#readme",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/Kyrixty/bubble/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/Kyrixty/bubble.git"
   },
   "license": "MIT",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Kyrixty, AsianGinga",
+    "email": "kyrixty@gmail.com",
+    "url": "https://github.com/Kyrixty/bubble"
   },
   "contributors": [
     {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
+      "name": "Kyrixty",
+      "email": "kyrixty@gmail.com",
+      "url": "https://github.com/Kyrixty"
     }
   ],
   "main": "./src/main/main.ts",
@@ -40,7 +41,8 @@
     "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
     "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
-    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish always",
+    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never",
+    "package:publish": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish always",
     "prepare": "husky install",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
@@ -216,7 +218,7 @@
       "bubble.dat"
     ],
     "extraFiles": [
-        "bubble.dat"
+      "bubble.dat"
     ],
     "afterSign": ".erb/scripts/notarize.js",
     "mac": {
@@ -276,7 +278,7 @@
     }
   },
   "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
+    "url": "https://github.com/Kyrixty/bubble"
   },
   "devEngines": {
     "node": ">=14.x",

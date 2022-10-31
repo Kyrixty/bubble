@@ -299,7 +299,7 @@ function Main() {
       </Center>
       <br />
       <Center>
-        <Text size="sm">V0.1, expect bugs</Text>
+        <Text size="sm">V0.1.3, expect bugs</Text>
       </Center>
       <Box sx={{ padding: '20px' }}>
         {passwords.length ? (
