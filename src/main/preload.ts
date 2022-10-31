@@ -11,6 +11,12 @@ contextBridge.exposeInMainWorld('electron', {
   getPasswords: (args: unknown[]) => {
     return ipcRenderer.invoke('get-passwords', args);
   },
+  deleteAllPasswords: (args: unknown[]) => {
+    return ipcRenderer.invoke('remove-passwords', args);
+  },
+  deletePassword: (args: unknown[]) => {
+    return ipcRenderer.invoke('remove-password', args);
+  },
   ipcRenderer: {
     sendMessage(channel: Channels, args: unknown[]) {
       return ipcRenderer.send(channel, args);

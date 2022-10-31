@@ -44,7 +44,11 @@ const decrypt = (data: string, masterKey: string) => {
 };
 
 const createBubbleFile = () => {
-  const pathToFile = path.join(app.getPath('userData'), '/bubble/', 'bubble.dat');
+  const pathToFile = path.join(
+    app.getPath('userData'),
+    '/bubble/',
+    'bubble.dat'
+  );
   const pathDirname = path.dirname(pathToFile);
   !fs.existsSync(pathDirname) && fs.mkdirSync(pathDirname);
   !fs.existsSync(pathToFile) ? fs.writeFileSync(pathToFile, '') : null;
@@ -60,7 +64,7 @@ let mainWindow: BrowserWindow | null = null;
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
-  console.log(app.getPath("userData"))
+  console.log(app.getPath('userData'));
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
@@ -73,16 +77,52 @@ ipcMain.handle('create-password', async (event, arg) => {
   } else {
     data = decrypt(data, msgData.masterKey);
     if (data.error || !data) {
-        return { error: "Bad master key" };
+      return { error: 'Bad master key' };
     }
     data = JSON.parse(data);
   }
-  data.push({ website: msgData.website, password: msgData.password });
+  const createPayload = (data: any) => {
+    return {
+      website: data.website,
+      password: data.password,
+      nickname: data.nickname,
+    };
+  };
+  data.push(createPayload(msgData));
   fs.writeFileSync(
     pathToFile,
     encrypt(JSON.stringify(data), msgData.masterKey)
   );
   return 'Password created';
+});
+
+ipcMain.handle('remove-passwords', async (event, arg) => {
+  const pathToFile = createBubbleFile();
+  fs.writeFileSync(pathToFile, '');
+});
+
+ipcMain.handle('remove-password', async (event, arg) => {
+  const pathToFile = createBubbleFile();
+  let data = readFile(pathToFile);
+  const msgData = JSON.parse(arg);
+  if (!data) {
+    return { error: 'No passwords' };
+  }
+  data = decrypt(data, msgData.masterKey);
+  if (data.error || !data) {
+    return { error: 'Bad master key' };
+  }
+  const {website, password, nickname} = msgData;
+  data = JSON.parse(data);
+  console.log(data);
+  data = data.filter((item: any) => {
+    return item.website !== website && item.password !== password && item.nickname !== nickname;
+  })
+  fs.writeFileSync(
+    pathToFile,
+    encrypt(JSON.stringify(data), msgData.masterKey)
+  );
+  return { error: false, msg: 'Password removed' };
 });
 
 ipcMain.handle('get-passwords', async (event, arg) => {
@@ -94,7 +134,7 @@ ipcMain.handle('get-passwords', async (event, arg) => {
   } else {
     data = decrypt(data, msgData.masterKey);
     if (data.error || !data) {
-        return JSON.stringify({ error: "Bad master key" });
+      return JSON.stringify({ error: 'Bad master key' });
     }
     data = JSON.parse(data);
   }
@@ -184,7 +224,7 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  autoUpdater.checkForUpdatesAndNotify();
+  //autoUpdater.checkForUpdatesAndNotify();
   /*
   const hasUpdates = await autoUpdater.checkForUpdates();
   if (hasUpdates) {
