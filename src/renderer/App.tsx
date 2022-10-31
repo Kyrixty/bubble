@@ -204,7 +204,7 @@ function Main() {
         <Stack>
           <Title>Enter your Master Key</Title>
           <Text>
-            If this is your first time, create your own (strong) master key
+            If this is your first time, create your own <b>strong</b> master key
             below. Or, enter the master key you used before.
           </Text>
           <Popover
@@ -299,7 +299,7 @@ function Main() {
       </Center>
       <br />
       <Center>
-        <Text size="sm">V0.1.3, expect bugs</Text>
+        <Text size="sm">V0.1.6, expect bugs</Text>
       </Center>
       <Box sx={{ padding: '20px' }}>
         {passwords.length ? (
