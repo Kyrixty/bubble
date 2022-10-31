@@ -114,7 +114,6 @@ ipcMain.handle('remove-password', async (event, arg) => {
   }
   const {website, password, nickname} = msgData;
   data = JSON.parse(data);
-  console.log(data);
   data = data.filter((item: any) => {
     return item.website !== website || item.password !== password || item.nickname !== nickname;
   })
