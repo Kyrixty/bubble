@@ -58,58 +58,116 @@ const AppProviders = ({ children }: AppProviderProps) => {
 };
 
 export const PasswordCard = (props: PasswordCardProps) => {
+  const [openDeletePwdModal, setOpenDeletePwdModal] = useState(false);
+  const [confirmMasterKey, setConfirmMasterKey] = useState('');
+  const [confirm, setConfirm] = useState(false);
+
   return (
-    <Card radius="md" withBorder>
-      <Group position="apart">
-        <div>
-          <Title order={3}>
-            {props.website} {props.nickname && `(${props.nickname})`}
-          </Title>
-          <Space h="md" />
+    <>
+      <Modal
+        title="Are you sure?"
+        opened={openDeletePwdModal}
+        onClose={() => setOpenDeletePwdModal(false)}
+        size="sm"
+      >
+        <Text>
+          Are you sure you want to delete this password? This action{' '}
+          <b>cannot</b> be undone.
+        </Text>
+        <Space h="md" />
+        <Stack>
           <PasswordInput
-            sx={{ width: '200px' }}
-            value={props.password}
-            readOnly
-          />
-        </div>
-        <Group>
-          <CopyButton value={props.password}>
-            {({ copied, copy }) => (
-              <>
-                {copied &&
-                  showNotification({
-                    title: 'Copied!',
-                    message: 'Password copied to clipboard',
-                    color: 'teal',
-                    icon: <IconCheck size={16} />,
-                  })}
-                <ActionIcon
-                  variant="filled"
-                  size="xl"
-                  onClick={copy}
-                  color="blue"
-                >
-                  <IconCopy size={24} />
-                </ActionIcon>
-              </>
-            )}
-          </CopyButton>
-          <ActionIcon
-            variant="filled"
-            size="xl"
-            onClick={() => {
-              props.deleteFn({
-                ...props,
-                masterKey: props.masterKey,
-              });
+            label="Master Key"
+            placeholder="Enter your master key to confirm"
+            onChange={(e) => {
+              setConfirmMasterKey(e.target.value);
             }}
+          />
+          <Checkbox
+            label="I understand that this action cannot be undone"
+            onChange={(e) => {
+              setConfirm(e.target.checked);
+            }}
+          />
+        </Stack>
+        <Space h="md" />
+        <Center>
+          <Button
             color="red"
+            disabled={!confirm || confirmMasterKey !== props.masterKey}
+            leftIcon={<IconTrash size={24} />}
+            onClick={() => {
+              if (confirmMasterKey === props.masterKey && confirm) {
+                props.deleteFn({
+                  masterKey: props.masterKey,
+                  nickname: props.nickname,
+                  password: props.password,
+                  website: props.website,
+                });
+                setOpenDeletePwdModal(false);
+              } else {
+                showNotification({
+                  title: 'Error',
+                  message: 'Master key is incorrect or you did not confirm',
+                  color: 'red',
+                  icon: <IconX size={24} />,
+                });
+              }
+            }}
           >
-            <IconTrash size={24} />
-          </ActionIcon>
+            Delete "{`${props.website} (${props.nickname})`}"
+          </Button>
+        </Center>
+      </Modal>
+      <Card radius="md" withBorder>
+        <Group position="apart">
+          <div>
+            <Title order={3}>
+              {props.website} {props.nickname && `(${props.nickname})`}
+            </Title>
+            <Space h="md" />
+            <PasswordInput
+              sx={{ width: '200px' }}
+              value={props.password}
+              readOnly
+            />
+          </div>
+          <Group>
+            <CopyButton value={props.password}>
+              {({ copied, copy }) => (
+                <>
+                  {copied &&
+                    showNotification({
+                      title: 'Copied!',
+                      message: 'Password copied to clipboard',
+                      color: 'teal',
+                      icon: <IconCheck size={16} />,
+                    })}
+                  <ActionIcon
+                    variant="filled"
+                    size="xl"
+                    onClick={copy}
+                    color="blue"
+                  >
+                    <IconCopy size={24} />
+                  </ActionIcon>
+                </>
+              )}
+            </CopyButton>
+            <ActionIcon
+              variant="filled"
+              size="xl"
+              onClick={() => {
+                setOpenDeletePwdModal(true);
+              }}
+              color="red"
+            >
+              <IconTrash size={24} />
+            </ActionIcon>
+          </Group>
         </Group>
-      </Group>
-    </Card>
+      </Card>
+    </>
   );
 };
 
@@ -398,7 +456,12 @@ function Main() {
                   color="green"
                   leftIcon={<IconPlus size={24} />}
                   onClick={() => {
-                    createPassword(newPassword, masterKey, newWebsite, newNickname);
+                    createPassword(
+                      newPassword,
+                      masterKey,
+                      newWebsite,
+                      newNickname
+                    );
                     setAddPasswordClicked(false);
                   }}
                 >
