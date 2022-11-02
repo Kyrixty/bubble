@@ -78,7 +78,7 @@ export const PasswordCard = (props: PasswordCardProps) => {
         <Stack>
           <PasswordInput
             label="Master Key"
-            placeholder="Enter your master key to confirm"
+            placeholder="Enter your Master Key to confirm"
             onChange={(e) => {
               setConfirmMasterKey(e.target.value);
             }}
@@ -108,7 +108,7 @@ export const PasswordCard = (props: PasswordCardProps) => {
               } else {
                 showNotification({
                   title: 'Error',
-                  message: 'Master key is incorrect or you did not confirm',
+                  message: 'Master Key is incorrect or you did not confirm',
                   color: 'red',
                   icon: <IconX size={24} />,
                 });
